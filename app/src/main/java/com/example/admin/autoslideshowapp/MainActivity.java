@@ -179,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
     //スライドショー表示
     private void getRepeatContentsInfo() {
 
