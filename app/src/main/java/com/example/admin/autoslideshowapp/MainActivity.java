@@ -24,7 +24,10 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
+    Cursor cursor;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
+    Handler mHandler = new Handler();
+    Timer timer = null;
 
 
     @Override
@@ -55,18 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Button button3 = (Button)findViewById(R.id.button3);
         button3.setOnClickListener(this);
-
     }
-
-    //画像の情報を取得する
-    ContentResolver resolver = getContentResolver();
-    Cursor cursor = resolver.query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,   //データの種類
-            null,   //項目
-            null,   // フィルタ条件
-            null,   //フィルタ用パラメータ
-            null    //ソート
-    );
 
     @Override
     public void onClick(View v){
@@ -79,15 +71,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //進むボタンの処理
             getNextContentsInfo();
 
-        //} else if(v.getId() == R.id.button3) {
+        } else if(v.getId() == R.id.button3) {
             //再生／停止ボタンの処理
+            getRepeatContentsInfo();
 
         }
     }
 
-
     //初期表示
     public void getContentsInfo() {
+        //画像の情報を取得する
+        ContentResolver resolver = getContentResolver();
+         cursor = resolver.query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,   //データの種類
+                null,   //項目
+                null,   // フィルタ条件
+                null,   //フィルタ用パラメータ
+                 null    //ソート
+        );
 
         if (cursor.moveToFirst()) {
             //do {
@@ -104,102 +105,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //}while(cursor.moveToNext());
         }
         //cursor.close();
+
     }
 
 
     //戻る処理
     private void getPreviousContentsInfo() {
 
-        //画像の情報を取得する
-        ContentResolver resolver = getContentResolver();
-        Cursor cursor = resolver.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,   //データの種類
-                null,   //項目
-                null,   // フィルタ条件
-                null,   //フィルタ用パラメータ
-                null    //ソート
-        );
+        if(cursor.isFirst()) {
+            if (cursor.moveToLast()) {
 
-        if (cursor.moveToNext()) {
+                // indexからIDを取得し、そのIDから画像のURIを取得する
+                int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                Long id = cursor.getLong(fieldIndex);
 
-            // indexからIDを取得し、そのIDから画像のURIを取得する
-            int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-            Long id = cursor.getLong(fieldIndex) - 1;
-            //id = id -1;
-            Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
-            Log.d("ANDROID", "URI : " + id.toString());
-            Log.d("ANDROID", "URI : " + imageUri.toString());
-            ImageView imageView = (ImageView) findViewById(R.id.imageView);
-            imageView.setImageURI(imageUri);
+                Log.d("ANDROID", "URI : " + id.toString());
+                Log.d("ANDROID", "URI : " + imageUri.toString());
+                ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                imageView.setImageURI(imageUri);
 
+            }
+        }else{
+            if (cursor.moveToPrevious()) {
+
+                // indexからIDを取得し、そのIDから画像のURIを取得する
+                int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                Long id = cursor.getLong(fieldIndex);
+
+                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                Log.d("ANDROID", "URI : " + id.toString());
+                Log.d("ANDROID", "URI : " + imageUri.toString());
+                ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                imageView.setImageURI(imageUri);
+            }
         }
-        cursor.close();
+        //cursor.close();
     }
 
 
     //進む処理
     private void getNextContentsInfo() {
 
-        //画像の情報を取得する
-        ContentResolver resolver = getContentResolver();
-        Cursor cursor = resolver.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,   //データの種類
-                null,   //項目
-                null,   // フィルタ条件
-                null,   //フィルタ用パラメータ
-                null    //ソート
-        );
+        if (cursor.isLast()) {
+            if (cursor.moveToFirst()) {
 
-        if (cursor.moveToNext()) {
-
-            // indexからIDを取得し、そのIDから画像のURIを取得する
-            int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-            Long id = cursor.getLong(fieldIndex) + 1;
-            Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-            Log.d("ANDROID", "URI : " + id.toString());
-            Log.d("ANDROID", "URI : " + imageUri.toString());
-            ImageView imageView = (ImageView) findViewById(R.id.imageView);
-            imageView.setImageURI(imageUri);
-
-        }
-        cursor.close();
-    }
-
-
-    //スライドショー表示
-    private void getRepeatContentsInfo() {
-
-        //画像の情報を取得する
-        ContentResolver resolver = getContentResolver();
-        Cursor cursor = resolver.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,   //データの種類
-                null,   //項目
-                null,   // フィルタ条件
-                null,   //フィルタ用パラメータ
-                null    //ソート
-        );
-
-        Timer timer = null;
-        Handler handle = new Handler();
-
-        if (timer == null) {
-            timer = new Timer();
-            //timer.schedule(new MyTimer(), 2000); // ミリ秒でセット
-        }
-        class MyTimer extends TimerTask {
-            @Override
-            public void run() {
-                //handle.post(new Runnable() {
-
-
-            }
-        }
-
-
-        if (cursor.moveToFirst()) {
-            do {
                 // indexからIDを取得し、そのIDから画像のURIを取得する
                 int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
                 Long id = cursor.getLong(fieldIndex);
@@ -209,15 +161,90 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("ANDROID", "URI : " + imageUri.toString());
                 ImageView imageView = (ImageView) findViewById(R.id.imageView);
                 imageView.setImageURI(imageUri);
-                //
-            }while(cursor.moveToNext());
-        }
-        cursor.close();
+            }
+        }else{
+            if (cursor.moveToNext()) {
 
-        timer.cancel();
-        timer = null;
+                // indexからIDを取得し、そのIDから画像のURIを取得する
+                int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                Long id = cursor.getLong(fieldIndex);
+
+                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                Log.d("ANDROID", "URI : " + id.toString());
+                Log.d("ANDROID", "URI : " + imageUri.toString());
+                ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                imageView.setImageURI(imageUri);
+            }
+        }
     }
 
+
+    //スライドショー表示
+    private void getRepeatContentsInfo() {
+
+        Button button1 = (Button)findViewById(R.id.button1);
+        Button button2 = (Button)findViewById(R.id.button2);
+        Button button3 = (Button)findViewById(R.id.button3);
+
+        if (timer == null) {
+            timer = new Timer();
+            timer.schedule(new MyTimer(), 2000,2000); // ミリ秒でセット
+
+            button1.setEnabled(false);
+            button2.setEnabled(false);
+            button3.setText("停止");
+
+        }else {
+
+            timer.cancel();
+            timer = null;
+            button1.setEnabled(true);
+            button2.setEnabled(true);
+            button3.setText("再生");
+
+        }
+    }
+
+    class MyTimer extends TimerTask {
+        @Override
+        public void run() {
+            //if (cursor.moveToFirst()) {
+            mHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (cursor.isLast()) {
+                        if (cursor.moveToFirst()) {
+                            // indexからIDを取得し、そのIDから画像のURIを取得する
+                            int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                            Long id = cursor.getLong(fieldIndex);
+                            Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                            Log.d("ANDROID", "URI : " + id.toString());
+                            Log.d("ANDROID", "URI : " + imageUri.toString());
+                            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                            imageView.setImageURI(imageUri);
+                        }
+                    }else{
+                        if (cursor.moveToNext()) {
+                            //do {
+                            // indexからIDを取得し、そのIDから画像のURIを取得する
+                            int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                            Long id = cursor.getLong(fieldIndex);
+                            Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                            Log.d("ANDROID", "URI : " + id.toString());
+                            Log.d("ANDROID", "URI : " + imageUri.toString());
+                            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                            imageView.setImageURI(imageUri);
+                            //}while(cursor.moveToNext());
+                        }
+                    }
+                }
+            });
+        }
+    }
 
 
     @Override
