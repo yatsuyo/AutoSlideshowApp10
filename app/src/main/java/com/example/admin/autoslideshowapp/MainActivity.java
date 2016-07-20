@@ -110,48 +110,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    //戻る処理
+    //戻るボタンの処理
     private void getPreviousContentsInfo() {
 
-        if(cursor.isFirst()) {
-            if (cursor.moveToLast()) {
-
-                // indexからIDを取得し、そのIDから画像のURIを取得する
-                int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-                Long id = cursor.getLong(fieldIndex);
-
-                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-                Log.d("ANDROID", "URI : " + id.toString());
-                Log.d("ANDROID", "URI : " + imageUri.toString());
-                ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                imageView.setImageURI(imageUri);
-
-            }
-        }else{
-            if (cursor.moveToPrevious()) {
-
-                // indexからIDを取得し、そのIDから画像のURIを取得する
-                int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-                Long id = cursor.getLong(fieldIndex);
-
-                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-                Log.d("ANDROID", "URI : " + id.toString());
-                Log.d("ANDROID", "URI : " + imageUri.toString());
-                ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                imageView.setImageURI(imageUri);
-            }
+        if(cursor==null){
+            return;
         }
-        //cursor.close();
+
+        if ((cursor.isFirst() && cursor.moveToLast()) || cursor.moveToPrevious()) {
+
+                // indexからIDを取得し、そのIDから画像のURIを取得する
+                int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                Long id = cursor.getLong(fieldIndex);
+
+                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                Log.d("ANDROID", "URI : " + id.toString());
+                Log.d("ANDROID", "URI : " + imageUri.toString());
+                ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                imageView.setImageURI(imageUri);
+        }
     }
 
 
-    //進む処理
+    //進むボタンの処理
     private void getNextContentsInfo() {
 
-        if (cursor.isLast()) {
-            if (cursor.moveToFirst()) {
+        if(cursor==null){
+            return;
+        }
+
+        if ((cursor.isLast() && cursor.moveToFirst()) || cursor.moveToNext()) {
 
                 // indexからIDを取得し、そのIDから画像のURIを取得する
                 int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
@@ -162,21 +151,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("ANDROID", "URI : " + imageUri.toString());
                 ImageView imageView = (ImageView) findViewById(R.id.imageView);
                 imageView.setImageURI(imageUri);
-            }
-        }else{
-            if (cursor.moveToNext()) {
-
-                // indexからIDを取得し、そのIDから画像のURIを取得する
-                int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-                Long id = cursor.getLong(fieldIndex);
-
-                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-                Log.d("ANDROID", "URI : " + id.toString());
-                Log.d("ANDROID", "URI : " + imageUri.toString());
-                ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                imageView.setImageURI(imageUri);
-            }
         }
     }
 
