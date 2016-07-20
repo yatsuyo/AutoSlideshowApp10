@@ -36,19 +36,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         // Android 6.0以降の場合
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        //    //パーミッションの許可状態を確認する
-        //    if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-        //        //許可されている
-        //        getContentsInfo();
-        //    } else {
-        //        //許可されていないので許可ダイアログを表示する
-        //        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_CODE);
-        //    }
-        //    //Android5.0系以下の場合
-        //} else {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //パーミッションの許可状態を確認する
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                //許可されている
+                getContentsInfo();
+            } else {
+                //許可されていないので許可ダイアログを表示する
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_CODE);
+            }
+            //Android5.0系以下の場合
+        } else {
             getContentsInfo();
-        //}
+        }
 
         Button button1 = (Button)findViewById(R.id.button1);
         button1.setOnClickListener(this);
